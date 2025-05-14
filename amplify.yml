@@ -1,0 +1,20 @@
+version: 1
+frontend:
+  phases:
+    build:
+      commands:
+        - npm install
+        - npm run build
+  artifacts:
+    baseDirectory: build
+    files:
+      - '**/*'
+backend:
+  phases:
+    build:
+      commands:
+        - npm install
+  artifacts:
+    baseDirectory: .
+    files:
+      - '**/*'
