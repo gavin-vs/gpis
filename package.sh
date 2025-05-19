@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # Create a clean directory
-rm -rf image-resizer-amplify
-mkdir image-resizer-amplify
+rm -rf image-resizer
+mkdir image-resizer
 
 # Copy the app-lambda.js into the directory
-cp app.js image-resizer-amplify
-cp amplify.yml image-resizer-amplify
+cp app.js image-resizer
 # Create a package.json in the directory
-cat <<EOL > image-resizer-amplify/package.json
+cat <<EOL > image-resizer/package.json
 {
   "name": "app",
   "version": "1.0.0",
@@ -30,7 +29,7 @@ cat <<EOL > image-resizer-amplify/package.json
 EOL
 
 # Navigate to the folder
-cd image-resizer-amplify
+cd image-resizer
 
 # Install dependencies with the necessary flags for AWS compatibility
 echo installing Linux dependencies
@@ -39,9 +38,9 @@ echo installing Optional dependencies
 npm install --include=optional sharp
 
 # Create the ZIP file
-/c/Program\ Files/7-Zip/7z.exe a -r ../image-resizer-amplify.zip *
+/c/Program\ Files/7-Zip/7z.exe a -r ../image-resizer.zip *
 
 # Go back to the root directory
 cd ..
 
-echo "Amplify package prepared: image-resizer-amplify.zip"
+echo "Package prepared: image-resizer.zip"
