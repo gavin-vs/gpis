@@ -1,47 +1,65 @@
 #!/bin/bash
 
+START_DIR=$(pwd)
+
+# Specify output directory
+TARGET_BASE_DIR="target"
+TARGET_APP_NAME="image-resizer-amplify"
+TARGET_DIR="$TARGET_BASE_DIR/$TARGET_APP_NAME"
+
+echo "Starting from $START_DIR, creating $TARGET_APP_NAME in $TARGET_DIR"
+
 # Create a clean directory
-rm -rf image-resizer-amplify
-mkdir image-resizer-amplify
+rm -rf $TARGET_DIR
+rm -f $TARGET_DIR.zip
+rm -f $TARGET_DIR.tar.gz
+mkdir -p $TARGET_DIR
 
 # Copy the app-lambda.js into the directory
-cp app.js image-resizer-amplify
-cp amplify.yml image-resizer-amplify
+cp app.js $TARGET_DIR/
+cp amplify.yml $TARGET_DIR/
+
 # Create a package.json in the directory
-cat <<EOL > image-resizer-amplify/package.json
+cat <<EOL > $TARGET_DIR/package.json
 {
-  "name": "app",
-  "version": "1.0.0",
+  "name": "image-scaler-node",
+  "version": "0.0.1",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "axios": "^1.8.4",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "sharp": "^0.34.1"
-  },
-  "description": ""
+  }
 }
 EOL
 
 # Navigate to the folder
-cd image-resizer-amplify
+cd $TARGET_DIR
+echo in $(pwd)
 
 # Install dependencies with the necessary flags for AWS compatibility
 echo installing Linux dependencies
+echo  - about to run npm install
+npm install
+echo  - about to run npm install --os=linux --cpu=x64 sharp
 npm install --os=linux --cpu=x64 sharp
-echo installing Optional dependencies
+echo  - about to run npm install --include=optional sharp
 npm install --include=optional sharp
 
 # Create the ZIP file
-/c/Program\ Files/7-Zip/7z.exe a -r ../image-resizer-amplify.zip *
+if [ -f /c/Program\ Files/7-Zip/7z.exe ]; then
+    echo "7-Zip found, creating ZIP file"
+    /c/Program\ Files/7-Zip/7z.exe a -r $START_DIR/$TARGET_DIR.zip *
+else
+    echo "7-Zip not found, please install it to create the ZIP file"
+    exit 1
+fi
 
-# Go back to the root directory
-cd ..
+# Go back to the start directory
+cd $START_DIR
 
-echo "Amplify package prepared: image-resizer-amplify.zip"
+if [ -f $START_DIR/$TARGET_DIR.zip ]; then echo "Node package prepared: $TARGET_DIR.zip"; fi
+if [ -f $START_DIR/$TARGET_DIR.tar.gz ]; then echo "Node package prepared: $TARGET_DIR.tar.gz"; fi

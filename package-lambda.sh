@@ -1,48 +1,63 @@
 #!/bin/bash
 
+START_DIR=$(pwd)
+
+# Specify output directory
+TARGET_BASE_DIR="target"
+TARGET_APP_NAME="image-resizer-lambda"
+TARGET_DIR="$TARGET_BASE_DIR/$TARGET_APP_NAME"
+
+echo "Starting from $START_DIR, creating $TARGET_APP_NAME in $TARGET_DIR"
+
 # Create a clean directory
-rm -rf image-resizer-lambda
-mkdir image-resizer-lambda
+rm -rf $TARGET_DIR
+rm -f $TARGET_DIR.zip
+rm -f $TARGET_DIR.tar.gz
+mkdir -p $TARGET_DIR
 
 # Copy the app-lambda.js into the directory
-cp app-lambda.js image-resizer-lambda/
+cp app-lambda.js $TARGET_DIR/
 
 # Create a package.json in the directory
-cat <<EOL > image-resizer-lambda/package.json
+cat <<EOL > $TARGET_DIR/package.json
 {
-  "name": "app",
-  "version": "1.0.0",
+  "name": "image-scaler-node",
+  "version": "0.0.1",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "sharp": "^0.34.1"
-  },
-  "description": ""
+  }
 }
 EOL
 
 # Navigate to the folder
-cd image-resizer-lambda
+cd $TARGET_DIR
 echo in $(pwd)
-ls -alh
 
 # Install dependencies with the necessary flags for AWS compatibility
-echo about to run npm install
+echo installing Linux dependencies
+echo  - about to run npm install
 npm install
-echo about to run npm install --os=linux --cpu=x64 sharp
+echo  - about to run npm install --os=linux --cpu=x64 sharp
 npm install --os=linux --cpu=x64 sharp
-echo about to run npm install --include=optional sharp
+echo  - about to run npm install --include=optional sharp
 npm install --include=optional sharp
 
 # Create the ZIP file
-/c/Program\ Files/7-Zip/7z.exe a -r ../image-resizer-lambda.zip *
+if [ -f /c/Program\ Files/7-Zip/7z.exe ]; then
+    echo "7-Zip found, creating ZIP file"
+    /c/Program\ Files/7-Zip/7z.exe a -r $START_DIR/$TARGET_DIR.zip *
+else
+    echo "7-Zip not found, please install it to create the ZIP file"
+    exit 1
+fi
 
-# Go back to the root directory
-cd ..
+# Go back to the start directory
+cd $START_DIR
 
-echo "Lambda package prepared: image-resizer-lambda.zip"
+if [ -f $START_DIR/$TARGET_DIR.zip ]; then echo "Node package prepared: $TARGET_DIR.zip"; fi
+if [ -f $START_DIR/$TARGET_DIR.tar.gz ]; then echo "Node package prepared: $TARGET_DIR.tar.gz"; fi
