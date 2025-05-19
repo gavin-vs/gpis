@@ -40,7 +40,7 @@ const sizeMap = {
 
 // main method, uses "exports.handler" for Lambda requests and "app.get" for Express requests
 // Lambda handler would normally use "event" but we're using "req" to align with non-Lambda version
-app.get('*assetPath', async (req, res) => {
+app.get('*', async (req, res) => {
     vs.log('Starting timer');
     console.time('resize');
 

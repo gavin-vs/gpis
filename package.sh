@@ -32,6 +32,7 @@ EOL
 cd image-resizer
 
 # Install dependencies with the necessary flags for AWS compatibility
+npm install
 echo installing Linux dependencies
 npm install --os=linux --cpu=x64 sharp
 echo installing Optional dependencies
@@ -40,7 +41,10 @@ npm install --include=optional sharp
 # Create the ZIP file
 /c/Program\ Files/7-Zip/7z.exe a -r ../image-resizer.zip *
 
+# Create the Tarball
+tar -czvf ../image-resizer.tar.gz *
+
 # Go back to the root directory
 cd ..
 
-echo "Package prepared: image-resizer.zip"
+echo "Packages prepared: image-resizer.zip image-resizer.tar.gz"
